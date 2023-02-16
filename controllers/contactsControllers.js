@@ -1,5 +1,15 @@
-const getAllContacts = (req, res, next) => {
-  res.json({ message: "GET all contact" }); // dummy function for now
+const { listContacts } = require("../models/contacts");
+
+const getAllContacts = async (req, res, next) => {
+  const contacts = await listContacts();
+  res.json({
+    status: "success",
+    code: 200,
+    data: {
+      contacts,
+    },
+  });
+  //   res.json({ message: "GET all contact" }); // dummy function for now
 };
 
 const getOneContactById = (req, res, next) => {
