@@ -13,7 +13,7 @@ const listContacts = async () => {
     const contacts = JSON.parse(response);
     return contacts;
   } catch (error) {
-    console.error(err.message);
+    return error.message;
   }
 };
 
@@ -24,7 +24,7 @@ const getContactById = async (contactId) => {
     const findContact = contacts.find((item) => item.id === contactId);
     return findContact;
   } catch (error) {
-    console.error(err.message);
+    return error.message;
   }
 };
 
@@ -33,6 +33,7 @@ const removeContact = async (contactId) => {
     const response = await fs.readFile(contactsPath);
     const contacts = JSON.parse(response);
     const index = contacts.findIndex((contact) => contact.id === contactId);
+
     if (index === -1) {
       return undefined;
     }
@@ -41,11 +42,11 @@ const removeContact = async (contactId) => {
     fs.writeFile(contactsPath, newContactList);
     return 1;
   } catch (error) {
-    console.error(err.message);
+    return error.message;
   }
 };
 
-const addContact = async (name, email, phone) => {
+const addContact = async ({ name, email, phone }) => {
   try {
     const newContact = { id: crypro.randomUUID(), name, email, phone };
     const response = await fs.readFile(contactsPath);
@@ -54,26 +55,57 @@ const addContact = async (name, email, phone) => {
     const isContact = contacts.find(
       (contact) => contact.name === newContact.name
     );
-
-    if (isContact) {
-      console.log("Контакт з таким імя'м вже зареєстровнний.".red);
-      return;
-    } else {
-      const newContactList = JSON.stringify(
-        [...contacts, newContact],
-        null,
-        "\t"
-      );
-      fs.writeFile(contactsPath, newContactList);
-      const newList = JSON.parse(newContactList);
-      return newContact;
-    }
+    const newContactList = JSON.stringify(
+      [...contacts, newContact],
+      null,
+      "\t"
+    );
+    fs.writeFile(contactsPath, newContactList);
+    return { newContact, isContact };
   } catch (error) {
-    console.error(err.message);
+    return error.message;
   }
 };
 
-const updateContact = async (contactId, body) => {};
+const updateContact = async (contactId, { name, email, phone }) => {
+  try {
+    const response = await fs.readFile(contactsPath);
+    const contacts = JSON.parse(response);
+    const updatedContact = contacts.find((item) => item.id === contactId);
+
+    if (updatedContact) {
+      updatedContact.name = name;
+      updatedContact.email = email;
+      updatedContact.phone = phone;
+
+      fs.writeFile(contactsPath, JSON.stringify(contacts, null, "\t"));
+      return updatedContact;
+    }
+    return updatedContact;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+const updateBitContact = async (contactId, { name, email, phone }) => {
+  try {
+    const response = await fs.readFile(contactsPath);
+    const contacts = JSON.parse(response);
+    const updatedContact = contacts.find((item) => item.id === contactId);
+
+    if (updatedContact) {
+      updatedContact.name = name;
+      updatedContact.email = email;
+      updatedContact.phone = phone;
+
+      fs.writeFile(contactsPath, JSON.stringify(contacts, null, "\t"));
+      return updatedContact;
+    }
+    return updatedContact;
+  } catch (error) {
+    return error.message;
+  }
+};
 
 module.exports = {
   listContacts,
@@ -81,4 +113,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
+  updateBitContact,
 };
