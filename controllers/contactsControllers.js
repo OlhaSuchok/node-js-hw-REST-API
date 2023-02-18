@@ -1,10 +1,12 @@
+// const Joi = require("joi");
+
 const {
   listContacts,
   getContactById,
   removeContact,
   addContact,
   updateContact,
-  updateBitContact,
+  patchContact,
 } = require("../models/contacts");
 
 const getAllContacts = async (req, res, next) => {
@@ -59,6 +61,24 @@ const addOneContact = async (req, res, next) => {
   const { newContact, isContact } = await addContact(req.body);
 
   const { name, email, phone } = req.body;
+  // const schema = Joi.object({
+  //   name: Joi.string().alphanum().min(3).max(30).required(),
+  //   email: Joi.string().email({
+  //     minDomainSegments: 2,
+  //     tlds: { allow: ["com", "net"] },
+  //   }),
+  //   phone: Joi.string().min(7).max(15).required(),
+  // });
+
+  // const validationResalt = schema.validate(req.body);
+
+  // if (validationResalt.error) {
+  //   return res.json({
+  //     status: "error",
+  //     code: 400,
+  //     message: validationResalt.error.details,
+  //   });
+  // }
 
   if (!name) {
     return res.status(400).json({
@@ -99,6 +119,25 @@ const updateOneContactById = async (req, res, next) => {
   const { contactId } = req.params;
   const updatedContact = await updateContact(contactId, req.body);
   const { name, email, phone } = req.body;
+
+  // const schema = Joi.object({
+  //   name: Joi.string().alphanum().min(3).max(30).required(),
+  //   email: Joi.string().email({
+  //     minDomainSegments: 2,
+  //     tlds: { allow: ["com", "net"] },
+  //   }),
+  //   phone: Joi.string().min(7).max(15).required(),
+  // });
+
+  // const validationResalt = schema.validate(req.body);
+
+  // if (validationResalt.error) {
+  //   return res.json({
+  //     status: "error",
+  //     code: 400,
+  //     message: validationResalt.error.details,
+  //   });
+  // }
 
   if (!name && !email && !phone) {
     return res.status(400).json({
@@ -160,10 +199,29 @@ const updateOneContactById = async (req, res, next) => {
   }
 };
 
-const updateBitOneContactById = async (req, res, next) => {
+const patchContactById = async (req, res, next) => {
   const { contactId } = req.params;
-  const updatedContact = await updateBitContact(contactId, req.body);
+  const updatedContact = await patchContact(contactId, req.body);
   const { name, email, phone } = req.body;
+
+  // const schema = Joi.object({
+  //   name: Joi.string().alphanum().min(3).max(30).optional(),
+  //   email: Joi.string().email({
+  //     minDomainSegments: 2,
+  //     tlds: { allow: ["com", "net"] },
+  //   }),
+  //   phone: Joi.string().min(7).max(15).optional(),
+  // });
+
+  // const validationResalt = schema.validate(req.body);
+
+  // if (validationResalt.error) {
+  //   return res.json({
+  //     status: "error",
+  //     code: 400,
+  //     message: validationResalt.error.details,
+  //   });
+  // }
 
   if (updateContact) {
     return res.json({
@@ -189,5 +247,5 @@ module.exports = {
   deleteOneContactById,
   addOneContact,
   updateOneContactById,
-  updateBitOneContactById,
+  patchContactById,
 };

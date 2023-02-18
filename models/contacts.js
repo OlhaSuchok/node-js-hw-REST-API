@@ -87,7 +87,7 @@ const updateContact = async (contactId, { name, email, phone }) => {
   }
 };
 
-const updateBitContact = async (contactId, { name, email, phone }) => {
+const patchContact = async (contactId, { name, email, phone }) => {
   try {
     const response = await fs.readFile(contactsPath);
     const contacts = JSON.parse(response);
@@ -113,5 +113,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
-  updateBitContact,
+  patchContact,
 };
