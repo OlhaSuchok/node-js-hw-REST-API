@@ -1,5 +1,3 @@
-// const Joi = require("joi");
-
 const {
   listContacts,
   getContactById,
@@ -9,7 +7,7 @@ const {
   patchContact,
 } = require("../models/contacts");
 
-const getAllContacts = async (req, res, next) => {
+const getAllContacts = async (req, res) => {
   const contacts = await listContacts();
   res.json({
     status: "success",
@@ -20,7 +18,7 @@ const getAllContacts = async (req, res, next) => {
   });
 };
 
-const getOneContactById = async (req, res, next) => {
+const getOneContactById = async (req, res) => {
   const { contactId } = req.params;
   const findContact = await getContactById(contactId);
   if (findContact) {
@@ -39,7 +37,7 @@ const getOneContactById = async (req, res, next) => {
   });
 };
 
-const deleteOneContactById = async (req, res, next) => {
+const deleteOneContactById = async (req, res) => {
   const { contactId } = req.params;
   const result = await removeContact(contactId);
 
@@ -57,28 +55,9 @@ const deleteOneContactById = async (req, res, next) => {
   });
 };
 
-const addOneContact = async (req, res, next) => {
+const addOneContact = async (req, res) => {
   const { newContact, isContact } = await addContact(req.body);
-
   const { name, email, phone } = req.body;
-  // const schema = Joi.object({
-  //   name: Joi.string().alphanum().min(3).max(30).required(),
-  //   email: Joi.string().email({
-  //     minDomainSegments: 2,
-  //     tlds: { allow: ["com", "net"] },
-  //   }),
-  //   phone: Joi.string().min(7).max(15).required(),
-  // });
-
-  // const validationResalt = schema.validate(req.body);
-
-  // if (validationResalt.error) {
-  //   return res.json({
-  //     status: "error",
-  //     code: 400,
-  //     message: validationResalt.error.details,
-  //   });
-  // }
 
   if (!name) {
     return res.status(400).json({
@@ -114,30 +93,10 @@ const addOneContact = async (req, res, next) => {
   });
 };
 
-// Додати перевірку, коли не знайдено id
-const updateOneContactById = async (req, res, next) => {
+const updateOneContactById = async (req, res) => {
   const { contactId } = req.params;
   const updatedContact = await updateContact(contactId, req.body);
   const { name, email, phone } = req.body;
-
-  // const schema = Joi.object({
-  //   name: Joi.string().alphanum().min(3).max(30).required(),
-  //   email: Joi.string().email({
-  //     minDomainSegments: 2,
-  //     tlds: { allow: ["com", "net"] },
-  //   }),
-  //   phone: Joi.string().min(7).max(15).required(),
-  // });
-
-  // const validationResalt = schema.validate(req.body);
-
-  // if (validationResalt.error) {
-  //   return res.json({
-  //     status: "error",
-  //     code: 400,
-  //     message: validationResalt.error.details,
-  //   });
-  // }
 
   if (!name && !email && !phone) {
     return res.status(400).json({
@@ -192,53 +151,31 @@ const updateOneContactById = async (req, res, next) => {
     });
   }
 
-  if (res.body.data === {}) {
+  if (!updatedContact) {
     return res.status(404).json({
       message: "Not found.",
     });
   }
 };
 
-const patchContactById = async (req, res, next) => {
+const patchContactById = async (req, res) => {
   const { contactId } = req.params;
   const updatedContact = await patchContact(contactId, req.body);
-  const { name, email, phone } = req.body;
 
-  // const schema = Joi.object({
-  //   name: Joi.string().alphanum().min(3).max(30).optional(),
-  //   email: Joi.string().email({
-  //     minDomainSegments: 2,
-  //     tlds: { allow: ["com", "net"] },
-  //   }),
-  //   phone: Joi.string().min(7).max(15).optional(),
-  // });
-
-  // const validationResalt = schema.validate(req.body);
-
-  // if (validationResalt.error) {
-  //   return res.json({
-  //     status: "error",
-  //     code: 400,
-  //     message: validationResalt.error.details,
-  //   });
-  // }
-
-  if (updateContact) {
-    return res.json({
-      status: "success",
-      code: 200,
-      message: "contact updated",
-      data: {
-        updatedContact,
-      },
-    });
-  }
-
-  if (res.body.data === {}) {
+  if (!updateContact) {
     return res.status(404).json({
       message: "Not found.",
     });
   }
+
+  return res.json({
+    status: "success",
+    code: 200,
+    message: "contact updated",
+    data: {
+      updatedContact,
+    },
+  });
 };
 
 module.exports = {
