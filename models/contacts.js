@@ -1,11 +1,7 @@
-// const fs = require('fs/promises')
-
+const fs = require("fs/promises");
 const crypro = require("crypto");
-const fs = require("fs").promises;
 const path = require("path");
-
-const contactsPath = path.join("./models/contacts.json");
-// const contactsPath = path.join(__dirname, "./contacts.json");
+const contactsPath = path.join(__dirname, "contacts.json");
 
 const listContacts = async () => {
   try {
@@ -94,9 +90,15 @@ const patchContact = async (contactId, { name, email, phone }) => {
     const updatedContact = contacts.find((item) => item.id === contactId);
 
     if (updatedContact) {
-      updatedContact.name = name;
-      updatedContact.email = email;
-      updatedContact.phone = phone;
+      if (name) {
+        updatedContact.name = name;
+      }
+      if (email) {
+        updatedContact.email = email;
+      }
+      if (phone) {
+        updatedContact.phone = phone;
+      }
 
       fs.writeFile(contactsPath, JSON.stringify(contacts, null, "\t"));
       return updatedContact;
