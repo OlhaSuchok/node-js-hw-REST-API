@@ -57,25 +57,6 @@ const deleteOneContactById = async (req, res) => {
 
 const addOneContact = async (req, res) => {
   const { newContact, isContact } = await addContact(req.body);
-  const { name, email, phone } = req.body;
-
-  if (!name) {
-    return res.status(400).json({
-      message: "missing required name field",
-    });
-  }
-
-  if (!email) {
-    return res.status(400).json({
-      message: "missing required email field",
-    });
-  }
-
-  if (!phone) {
-    return res.status(400).json({
-      message: "missing required phone field",
-    });
-  }
 
   if (isContact) {
     return res.status(400).json({
@@ -96,49 +77,6 @@ const addOneContact = async (req, res) => {
 const updateOneContactById = async (req, res) => {
   const { contactId } = req.params;
   const updatedContact = await updateContact(contactId, req.body);
-  const { name, email, phone } = req.body;
-
-  if (!name && !email && !phone) {
-    return res.status(400).json({
-      message: "missing required fields",
-    });
-  }
-
-  if (!name && !email) {
-    return res.status(400).json({
-      message: "missing required name and email field",
-    });
-  }
-
-  if (!name && !phone) {
-    return res.status(400).json({
-      message: "missing required name and phone field",
-    });
-  }
-
-  if (!email && !phone) {
-    return res.status(400).json({
-      message: "missing required email and phone field",
-    });
-  }
-
-  if (!name) {
-    return res.status(400).json({
-      message: "missing required name field",
-    });
-  }
-
-  if (!email) {
-    return res.status(400).json({
-      message: "missing required email field",
-    });
-  }
-
-  if (!phone) {
-    return res.status(400).json({
-      message: "missing required phone field",
-    });
-  }
 
   if (updateContact) {
     return res.json({
@@ -148,12 +86,6 @@ const updateOneContactById = async (req, res) => {
       data: {
         updatedContact,
       },
-    });
-  }
-
-  if (!updatedContact) {
-    return res.status(404).json({
-      message: "Not found.",
     });
   }
 };
