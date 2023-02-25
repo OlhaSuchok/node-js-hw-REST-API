@@ -7,7 +7,7 @@ const {
   patchContact,
 } = require("../models/contacts");
 
-const getAllContacts = async (req, res) => {
+const getAllContactsController = async (req, res) => {
   const contacts = await listContacts();
   res.json({
     status: "success",
@@ -18,7 +18,7 @@ const getAllContacts = async (req, res) => {
   });
 };
 
-const getOneContactById = async (req, res) => {
+const getOneContactByIdController = async (req, res) => {
   const { contactId } = req.params;
   const findContact = await getContactById(contactId);
   if (findContact) {
@@ -37,7 +37,7 @@ const getOneContactById = async (req, res) => {
   });
 };
 
-const deleteOneContactById = async (req, res) => {
+const deleteOneContactByIdController = async (req, res) => {
   const { contactId } = req.params;
   const result = await removeContact(contactId);
 
@@ -55,7 +55,7 @@ const deleteOneContactById = async (req, res) => {
   });
 };
 
-const addOneContact = async (req, res) => {
+const addOneContactController = async (req, res) => {
   const { newContact, isContact } = await addContact(req.body);
 
   if (isContact) {
@@ -74,7 +74,7 @@ const addOneContact = async (req, res) => {
   });
 };
 
-const updateOneContactById = async (req, res) => {
+const updateOneContactByIdController = async (req, res) => {
   const { contactId } = req.params;
   const updatedContact = await updateContact(contactId, req.body);
 
@@ -90,7 +90,7 @@ const updateOneContactById = async (req, res) => {
   }
 };
 
-const patchContactById = async (req, res) => {
+const patchContactByIdController = async (req, res) => {
   const { contactId } = req.params;
   const updatedContact = await patchContact(contactId, req.body);
 
@@ -111,10 +111,10 @@ const patchContactById = async (req, res) => {
 };
 
 module.exports = {
-  getAllContacts,
-  getOneContactById,
-  deleteOneContactById,
-  addOneContact,
-  updateOneContactById,
-  patchContactById,
+  getAllContactsController,
+  getOneContactByIdController,
+  deleteOneContactByIdController,
+  addOneContactController,
+  updateOneContactByIdController,
+  patchContactByIdController,
 };

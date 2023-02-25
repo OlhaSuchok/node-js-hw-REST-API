@@ -24,7 +24,10 @@ const updateContact = async (contactId, { name, email, phone }) => {
   );
 };
 
-const patchContact = async (contactId, { name, email, phone }) => {};
+const patchContact = async (
+  contactId,
+  { name, email, phone, favorite = false }
+) => {};
 
 module.exports = {
   listContacts,
