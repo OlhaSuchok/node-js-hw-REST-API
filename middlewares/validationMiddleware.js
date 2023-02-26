@@ -31,7 +31,7 @@ module.exports = {
           "string.empty": `must contain value`,
           "any.required": `missing required phone field`,
         }),
-      favorite: Joi.boolean().required().messages({
+      favorite: Joi.boolean().optional().messages({
         "string.base": `should be a type of boolean`,
         "string.empty": `must contain value`,
         "any.required": `missing field favorite`,

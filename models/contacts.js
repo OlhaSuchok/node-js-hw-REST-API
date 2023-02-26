@@ -12,7 +12,7 @@ const deleteOneContactById = async (contactId) => {
   return Contact.findByIdAndRemove({ _id: contactId });
 };
 
-const addOneContact = async ({ name, email, phone, favorite }) => {
+const addOneContact = async ({ name, email, phone, favorite = false }) => {
   return Contact.create({ name, email, phone, favorite });
 };
 
