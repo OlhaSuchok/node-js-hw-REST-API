@@ -1,14 +1,14 @@
 const {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
+  getAllContacts,
+  getOneContactById,
+  deleteOneContactById,
+  addOneContact,
+  updateOneContactById,
   updateStatusContact,
 } = require("../models/contacts");
 
 const getAllContactsController = async (req, res) => {
-  const contacts = await listContacts();
+  const contacts = await getAllContacts();
   res.json({
     status: "success",
     code: 200,
@@ -20,7 +20,7 @@ const getAllContactsController = async (req, res) => {
 
 const getOneContactByIdController = async (req, res) => {
   const { contactId } = req.params;
-  const findContact = await getContactById(contactId);
+  const findContact = await getOneContactById(contactId);
   if (findContact) {
     return res.json({
       status: "success",
@@ -39,7 +39,7 @@ const getOneContactByIdController = async (req, res) => {
 
 const deleteOneContactByIdController = async (req, res) => {
   const { contactId } = req.params;
-  const result = await removeContact(contactId);
+  const result = await deleteOneContactById(contactId);
 
   if (result) {
     return res.json({
@@ -56,7 +56,7 @@ const deleteOneContactByIdController = async (req, res) => {
 };
 
 const addOneContactController = async (req, res) => {
-  const { newContact, isContact } = await addContact(req.body);
+  const { newContact, isContact } = await addOneContact(req.body);
 
   if (isContact) {
     return res.status(400).json({
@@ -76,9 +76,9 @@ const addOneContactController = async (req, res) => {
 
 const updateOneContactByIdController = async (req, res) => {
   const { contactId } = req.params;
-  const updatedContact = await updateContact(contactId, req.body);
+  const updatedContact = await updateOneContactById(contactId, req.body);
 
-  if (updateContact) {
+  if (updatedContact) {
     return res.json({
       status: "success",
       code: 200,
@@ -88,13 +88,16 @@ const updateOneContactByIdController = async (req, res) => {
       },
     });
   }
+  return res.status(404).json({
+    message: "Not found.",
+  });
 };
 
 const updateStatusContactController = async (req, res) => {
   const { contactId } = req.params;
   const updatedContact = await updateStatusContact(contactId, req.body);
 
-  if (!updateContact) {
+  if (!updatedContact) {
     return res.status(404).json({
       message: "Not found.",
     });

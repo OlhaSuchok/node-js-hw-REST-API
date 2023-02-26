@@ -1,25 +1,28 @@
 const Contact = require("../service/schemas/contacts");
 
-const listContacts = async () => {
+const getAllContacts = async () => {
   return Contact.find();
 };
 
-const getContactById = async (contactId) => {
+const getOneContactById = async (contactId) => {
   return Contact.findOne({ _id: contactId });
 };
 
-const removeContact = async (contactId) => {
+const deleteOneContactById = async (contactId) => {
   return Contact.findByIdAndRemove({ _id: contactId });
 };
 
-const addContact = async ({ name, email, phone }) => {
-  return Contact.create({ name, email, phone });
+const addOneContact = async ({ name, email, phone, favorite }) => {
+  return Contact.create({ name, email, phone, favorite });
 };
 
-const updateContact = async (contactId, { name, email, phone }) => {
+const updateOneContactById = async (
+  contactId,
+  { name, email, phone, favorite }
+) => {
   return Contact.findByIdAndUpdate(
     { _id: contactId },
-    { name, email, phone },
+    { name, email, phone, favorite },
     { new: true }
   );
 };
@@ -33,10 +36,10 @@ const updateStatusContact = async (contactId, { favorite }) => {
 };
 
 module.exports = {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
+  getAllContacts,
+  getOneContactById,
+  deleteOneContactById,
+  addOneContact,
+  updateOneContactById,
   updateStatusContact,
 };

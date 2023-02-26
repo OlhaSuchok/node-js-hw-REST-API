@@ -14,7 +14,7 @@ const {
 const {
   addContactValidation,
   uptateContactValidation,
-  patchContactValidation,
+  updateStatusContactValidation,
 } = require("../../middlewares/validationMiddleware");
 
 router.get("/", getAllContactsController);
@@ -33,7 +33,7 @@ router.put(
 
 router.patch(
   "/:contactId",
-  patchContactValidation,
+  updateStatusContactValidation,
   updateStatusContactController
 );
 

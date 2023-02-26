@@ -31,6 +31,11 @@ module.exports = {
           "string.empty": `must contain value`,
           "any.required": `missing required phone field`,
         }),
+      favorite: Joi.boolean().required().messages({
+        "string.base": `should be a type of boolean`,
+        "string.empty": `must contain value`,
+        "any.required": `missing field favorite`,
+      }),
     });
 
     const validationResalt = schema.validate(req.body);
@@ -75,6 +80,11 @@ module.exports = {
           "string.empty": `must contain value`,
           "any.required": `missing required phone field`,
         }),
+      favorite: Joi.boolean().optional().messages({
+        "string.base": `should be a type of boolean`,
+        "string.empty": `must contain value`,
+        "any.required": `missing field favorite`,
+      }),
     });
 
     const validationResalt = schema.validate(req.body);
@@ -89,7 +99,7 @@ module.exports = {
     next();
   },
 
-  patchContactValidation: (req, res, next) => {
+  updateStatusContactValidation: (req, res, next) => {
     const schema = Joi.object({
       favorite: Joi.boolean().messages({
         "string.base": `should be a type of boolean`,
