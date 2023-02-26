@@ -24,10 +24,13 @@ const updateContact = async (contactId, { name, email, phone }) => {
   );
 };
 
-const patchContact = async (
-  contactId,
-  { name, email, phone, favorite = false }
-) => {};
+const updateStatusContact = async (contactId, { favorite }) => {
+  return Contact.findByIdAndUpdate(
+    { _id: contactId },
+    { favorite },
+    { new: true }
+  );
+};
 
 module.exports = {
   listContacts,
@@ -35,5 +38,5 @@ module.exports = {
   removeContact,
   addContact,
   updateContact,
-  patchContact,
+  updateStatusContact,
 };

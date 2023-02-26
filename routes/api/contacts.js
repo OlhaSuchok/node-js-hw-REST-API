@@ -8,7 +8,7 @@ const {
   deleteOneContactByIdController,
   addOneContactController,
   updateOneContactByIdController,
-  patchContactByIdController,
+  updateStatusContactController,
 } = require("../../controllers/contactsControllers");
 
 const {
@@ -31,6 +31,10 @@ router.put(
   updateOneContactByIdController
 );
 
-router.patch("/:contactId", patchContactValidation, patchContactByIdController);
+router.patch(
+  "/:contactId",
+  patchContactValidation,
+  updateStatusContactController
+);
 
 module.exports = router;

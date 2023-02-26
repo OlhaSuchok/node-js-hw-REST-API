@@ -4,7 +4,7 @@ const {
   removeContact,
   addContact,
   updateContact,
-  patchContact,
+  updateStatusContact,
 } = require("../models/contacts");
 
 const getAllContactsController = async (req, res) => {
@@ -90,9 +90,9 @@ const updateOneContactByIdController = async (req, res) => {
   }
 };
 
-const patchContactByIdController = async (req, res) => {
+const updateStatusContactController = async (req, res) => {
   const { contactId } = req.params;
-  const updatedContact = await patchContact(contactId, req.body);
+  const updatedContact = await updateStatusContact(contactId, req.body);
 
   if (!updateContact) {
     return res.status(404).json({
@@ -116,5 +116,5 @@ module.exports = {
   deleteOneContactByIdController,
   addOneContactController,
   updateOneContactByIdController,
-  patchContactByIdController,
+  updateStatusContactController,
 };
