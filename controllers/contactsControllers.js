@@ -1,14 +1,14 @@
 const {
-  listContacts,
-  getContactById,
-  removeContact,
-  addContact,
-  updateContact,
-  patchContact,
+  getAllContacts,
+  getOneContactById,
+  deleteOneContactById,
+  addOneContact,
+  updateOneContactById,
+  updateStatusContact,
 } = require("../models/contacts");
 
-const getAllContacts = async (req, res) => {
-  const contacts = await listContacts();
+const getAllContactsController = async (req, res) => {
+  const contacts = await getAllContacts();
   res.json({
     status: "success",
     code: 200,
@@ -18,9 +18,9 @@ const getAllContacts = async (req, res) => {
   });
 };
 
-const getOneContactById = async (req, res) => {
+const getOneContactByIdController = async (req, res) => {
   const { contactId } = req.params;
-  const findContact = await getContactById(contactId);
+  const findContact = await getOneContactById(contactId);
   if (findContact) {
     return res.json({
       status: "success",
@@ -37,9 +37,9 @@ const getOneContactById = async (req, res) => {
   });
 };
 
-const deleteOneContactById = async (req, res) => {
+const deleteOneContactByIdController = async (req, res) => {
   const { contactId } = req.params;
-  const result = await removeContact(contactId);
+  const result = await deleteOneContactById(contactId);
 
   if (result) {
     return res.json({
@@ -55,8 +55,8 @@ const deleteOneContactById = async (req, res) => {
   });
 };
 
-const addOneContact = async (req, res) => {
-  const { newContact, isContact } = await addContact(req.body);
+const addOneContactController = async (req, res) => {
+  const { newContact, isContact } = await addOneContact(req.body);
 
   if (isContact) {
     return res.status(400).json({
@@ -74,11 +74,11 @@ const addOneContact = async (req, res) => {
   });
 };
 
-const updateOneContactById = async (req, res) => {
+const updateOneContactByIdController = async (req, res) => {
   const { contactId } = req.params;
-  const updatedContact = await updateContact(contactId, req.body);
+  const updatedContact = await updateOneContactById(contactId, req.body);
 
-  if (updateContact) {
+  if (updatedContact) {
     return res.json({
       status: "success",
       code: 200,
@@ -88,13 +88,16 @@ const updateOneContactById = async (req, res) => {
       },
     });
   }
+  return res.status(404).json({
+    message: "Not found.",
+  });
 };
 
-const patchContactById = async (req, res) => {
+const updateStatusContactController = async (req, res) => {
   const { contactId } = req.params;
-  const updatedContact = await patchContact(contactId, req.body);
+  const updatedContact = await updateStatusContact(contactId, req.body);
 
-  if (!updateContact) {
+  if (!updatedContact) {
     return res.status(404).json({
       message: "Not found.",
     });
@@ -111,10 +114,10 @@ const patchContactById = async (req, res) => {
 };
 
 module.exports = {
-  getAllContacts,
-  getOneContactById,
-  deleteOneContactById,
-  addOneContact,
-  updateOneContactById,
-  patchContactById,
+  getAllContactsController,
+  getOneContactByIdController,
+  deleteOneContactByIdController,
+  addOneContactController,
+  updateOneContactByIdController,
+  updateStatusContactController,
 };
