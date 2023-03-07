@@ -22,9 +22,10 @@ const registrationController = async (req, res) => {
 const loginController = async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await login(email, password);
+  const loginData = await login(email, password);
+  const token = loginData?.token;
 
-  if (!user) {
+  if (!loginData?.user) {
     return res.json({
       status: "Unauthorized",
       code: 401,
@@ -32,7 +33,7 @@ const loginController = async (req, res) => {
     });
   }
 
-  if (!(await bcrypt.compare(password, user.password))) {
+  if (!(await bcrypt.compare(password, loginData.user?.password))) {
     return res.json({
       status: "Unauthorized",
       code: 401,
@@ -40,8 +41,15 @@ const loginController = async (req, res) => {
     });
   }
 
+  const user = {
+    email: loginData?.user.email,
+    subscription: loginData?.user.subscription,
+  };
+
   return res.json({
     status: "success",
+    token,
+    user,
   });
 };
 

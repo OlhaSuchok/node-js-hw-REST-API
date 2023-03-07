@@ -12,16 +12,18 @@ const registration = async (email, password) => {
 const login = async (email, password) => {
   const user = await User.findOne({ email });
 
-  if (user) {
-    const token = jsonwebtoken.sign(
-      {
-        _id: user._id,
-      },
-      process.env.JWT_SECRET
-    );
+  if (!user) {
+    return;
   }
 
-  return user;
+  const token = jsonwebtoken.sign(
+    {
+      _id: user._id,
+    },
+    process.env.JWT_SECRET
+  );
+
+  return { user, token };
 };
 
 const logout = async () => {};
