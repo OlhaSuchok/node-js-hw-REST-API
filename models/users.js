@@ -1,13 +1,28 @@
-const User = require("../service/schemas/users");
+const jsonwebtoken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const User = require("../service/schemas/users");
+
+const { NotAuthorized } = require("../helpers/errors");
 
 const registration = async (email, password) => {
-  const user = new User({ email, password: await bcrypt.hash(password, 10) });
+  const user = new User({ email, password });
   await user.save();
-  //   const newUser = await user.save();
 };
 
-const login = async () => {};
+const login = async (email, password) => {
+  const user = await User.findOne({ email });
+
+  if (user) {
+    const token = jsonwebtoken.sign(
+      {
+        _id: user._id,
+      },
+      process.env.JWT_SECRET
+    );
+  }
+
+  return user;
+};
 
 const logout = async () => {};
 
