@@ -23,27 +23,11 @@ const loginController = async (req, res) => {
   const { email, password } = req.body;
 
   const loginData = await login(email, password);
-  const token = loginData?.token;
-
-  if (!loginData?.user) {
-    return res.json({
-      status: "Unauthorized",
-      code: 401,
-      message: `There is no user with email '${email}'`,
-    });
-  }
-
-  if (!(await bcrypt.compare(password, loginData.user?.password))) {
-    return res.json({
-      status: "Unauthorized",
-      code: 401,
-      message: "Password is wrong",
-    });
-  }
+  const token = loginData.token;
 
   const user = {
-    email: loginData?.user.email,
-    subscription: loginData?.user.subscription,
+    email: loginData.user.email,
+    subscription: loginData.user.subscription,
   };
 
   return res.json({

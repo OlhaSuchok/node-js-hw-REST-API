@@ -17,6 +17,10 @@ const {
   updateStatusContactValidation,
 } = require("../../middlewares/validationMiddleware");
 
+const { authMiddleware } = require("../../middlewares/authMiddleware");
+
+router.use(authMiddleware);
+
 router.get("/", getAllContactsController);
 
 router.get("/:contactId", getOneContactByIdController);

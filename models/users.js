@@ -2,7 +2,7 @@ const jsonwebtoken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../service/schemas/users");
 
-const { NotAuthorized } = require("../helpers/errors");
+const { NotAuthorizedError } = require("../helpers/errors");
 
 const registration = async (email, password) => {
   const user = new User({ email, password });
@@ -13,7 +13,10 @@ const login = async (email, password) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    return;
+    throw new NotAuthorizedError(`There is no user with email '${email}'`);
+  }
+  if (!(await bcrypt.compare(password, user.password))) {
+    throw new NotAuthorizedError("Password is wrong");
   }
 
   const token = jsonwebtoken.sign(
