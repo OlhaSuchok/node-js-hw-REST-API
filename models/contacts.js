@@ -1,35 +1,39 @@
 const Contact = require("../service/schemas/contacts");
 
-const getAllContacts = async () => {
-  return Contact.find();
+const getAllContacts = async (userId) => {
+  return Contact.find({ userId });
 };
 
-const getOneContactById = async (contactId) => {
-  return Contact.findOne({ _id: contactId });
+const getOneContactById = async (contactId, userId) => {
+  return Contact.findOne({ _id: contactId, userId });
 };
 
-const deleteOneContactById = async (contactId) => {
-  return Contact.findByIdAndRemove({ _id: contactId });
+const deleteOneContactById = async (contactId, userId) => {
+  return Contact.findByIdAndRemove({ _id: contactId, userId });
 };
 
-const addOneContact = async ({ name, email, phone, favorite = false }) => {
-  return Contact.create({ name, email, phone, favorite });
+const addOneContact = async (
+  { name, email, phone, favorite = false },
+  userId
+) => {
+  return Contact.create({ name, email, phone, favorite, userId });
 };
 
 const updateOneContactById = async (
   contactId,
-  { name, email, phone, favorite }
+  { name, email, phone, favorite },
+  userId
 ) => {
   return Contact.findByIdAndUpdate(
-    { _id: contactId },
+    { _id: contactId, userId },
     { name, email, phone, favorite },
     { new: true }
   );
 };
 
-const updateStatusContact = async (contactId, { favorite }) => {
+const updateStatusContact = async (contactId, { favorite }, userId) => {
   return Contact.findByIdAndUpdate(
-    { _id: contactId },
+    { _id: contactId, userId },
     { favorite },
     { new: true }
   );

@@ -7,7 +7,9 @@ const asyncWrapper = (controller) => {
 };
 const errorHandler = (error, req, res, next) => {
   if (error instanceof ContactsApi) {
-    return res.status(error.status).json({ message: error.message });
+    return res
+      .status(error.status)
+      .json({ message: JSON.stringify(error.message) });
   }
   return res.status(500).json({ message: error.message });
 };

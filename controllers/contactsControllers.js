@@ -8,7 +8,9 @@ const {
 } = require("../models/contacts");
 
 const getAllContactsController = async (req, res) => {
-  const contacts = await getAllContacts();
+  const { _id: userId } = req.user;
+
+  const contacts = await getAllContacts(userId);
   res.json({
     status: "success",
     code: 200,
@@ -19,8 +21,9 @@ const getAllContactsController = async (req, res) => {
 };
 
 const getOneContactByIdController = async (req, res) => {
+  const { _id: userId } = req.user;
   const { contactId } = req.params;
-  const findContact = await getOneContactById(contactId);
+  const findContact = await getOneContactById(contactId, userId);
   if (findContact) {
     return res.json({
       status: "success",
@@ -38,8 +41,9 @@ const getOneContactByIdController = async (req, res) => {
 };
 
 const deleteOneContactByIdController = async (req, res) => {
+  const { _id: userId } = req.user;
   const { contactId } = req.params;
-  const result = await deleteOneContactById(contactId);
+  const result = await deleteOneContactById(contactId, userId);
 
   if (result) {
     return res.json({
@@ -56,7 +60,8 @@ const deleteOneContactByIdController = async (req, res) => {
 };
 
 const addOneContactController = async (req, res) => {
-  const { newContact, isContact } = await addOneContact(req.body);
+  const { _id: userId } = req.user;
+  const { newContact, isContact } = await addOneContact(req.body, userId);
 
   if (isContact) {
     return res.status(400).json({
@@ -75,8 +80,13 @@ const addOneContactController = async (req, res) => {
 };
 
 const updateOneContactByIdController = async (req, res) => {
+  const { _id: userId } = req.user;
   const { contactId } = req.params;
-  const updatedContact = await updateOneContactById(contactId, req.body);
+  const updatedContact = await updateOneContactById(
+    contactId,
+    req.body,
+    userId
+  );
 
   if (updatedContact) {
     return res.json({
@@ -94,6 +104,7 @@ const updateOneContactByIdController = async (req, res) => {
 };
 
 const updateStatusContactController = async (req, res) => {
+  const { _id: userId } = req.user;
   const { contactId } = req.params;
   const updatedContact = await updateStatusContact(contactId, req.body);
 

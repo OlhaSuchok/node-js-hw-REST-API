@@ -1,11 +1,12 @@
 const jsonwebtoken = require("jsonwebtoken");
 
+const { NotAuthorizedError } = require("../helpers/errors");
+
 const authMiddleware = (req, res, next) => {
   const [tokenType, token] = req.headers["authorization"].split(" ");
 
   if (!token) {
-    res.status(401).json({ message: "Please, provide a token" });
-    return;
+    next(new NotAuthorizedError("Please, provide a token"));
   }
 
   try {
@@ -14,7 +15,7 @@ const authMiddleware = (req, res, next) => {
     req.token = token;
     next();
   } catch (error) {
-    res.status(401).json({ message: "Invalid token" });
+    next(new NotAuthorizedError("Invalid token"));
   }
 };
 
