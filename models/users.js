@@ -2,9 +2,18 @@ const jsonwebtoken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../service/schemas/users");
 
-const { NotAuthorizedError } = require("../helpers/errors");
+const {
+  NotAuthorizedError,
+  RegistrationConflictError,
+} = require("../helpers/errors");
 
 const registration = async (email, password) => {
+  const isUser = await User.findOne({ email });
+
+  if (isUser) {
+    throw new RegistrationConflictError(`Email '${email}' in use`);
+  }
+
   const user = new User({ email, password });
   await user.save();
 };
@@ -23,15 +32,35 @@ const login = async (email, password) => {
     {
       _id: user._id,
     },
-    process.env.JWT_SECRET
+    process.env.JWT_SECRET,
+    { expiresIn: "23h" }
   );
 
   return { user, token };
 };
 
-const logout = async () => {};
+const logout = async (userId) => {
+  const user = await User.findByIdAndUpdate(userId, { token: "" });
 
-const currentLogin = async () => {};
+  if (!user) {
+    throw new NotAuthorizedError("Not authorized");
+  }
+};
+
+const currentLogin = async (userId) => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new NotAuthorizedError("Not authorized");
+  }
+
+  const currentUser = {
+    email: user.email,
+    subscription: user.subscription,
+  };
+
+  return currentUser;
+};
 
 module.exports = {
   registration,

@@ -3,6 +3,12 @@ const express = require("express");
 const router = express.Router();
 
 const { asyncWrapper } = require("../../helpers/apiHelpers");
+const { authMiddleware } = require("../../middlewares/authMiddleware");
+
+const {
+  registerValidation,
+  loginValidation,
+} = require("../../middlewares/validationMiddleware");
 
 const {
   registrationController,
@@ -11,9 +17,13 @@ const {
   currentLoginController,
 } = require("../../controllers/authControllers");
 
-router.post("/register", asyncWrapper(registrationController));
-router.post("/login", asyncWrapper(loginController));
-router.post("/logout", asyncWrapper(logoutController));
-router.post("/current", asyncWrapper(currentLoginController));
+router.post(
+  "/register",
+  registerValidation,
+  asyncWrapper(registrationController)
+);
+router.post("/login", loginValidation, asyncWrapper(loginController));
+router.post("/logout", authMiddleware, asyncWrapper(logoutController));
+router.get("/current", authMiddleware, asyncWrapper(currentLoginController));
 
 module.exports = router;

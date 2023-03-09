@@ -1,5 +1,7 @@
 const Joi = require("joi");
 
+const { WrongParametersError } = require("../helpers/errors");
+
 module.exports = {
   addContactValidation: (req, res, next) => {
     const schema = Joi.object({
@@ -106,6 +108,62 @@ module.exports = {
         "string.empty": `must contain value`,
         "any.required": `missing field favorite`,
       }),
+    });
+
+    const validationResalt = schema.validate(req.body);
+
+    if (validationResalt.error) {
+      return res.json({
+        status: "error",
+        code: 400,
+        message: validationResalt.error.details[0].message,
+      });
+    }
+    next();
+  },
+
+  registerValidation: (req, res, next) => {
+    const schema = Joi.object({
+      email: Joi.string()
+        .email({
+          minDomainSegments: 2,
+          tlds: { allow: ["com", "net"] },
+        })
+        .required()
+        .messages({
+          "string.base": `should be a type of string`,
+          "string.empty": `must contain value`,
+          "any.required": `missing field favorite`,
+        }),
+      password: Joi.string().min(7).max(15).required(),
+    });
+
+    const validationResalt = schema.validate(req.body);
+
+    if (validationResalt.error) {
+      return res.json({
+        status: "error",
+        code: 400,
+        message: validationResalt.error.details[0].message,
+      });
+    }
+    next();
+  },
+
+  loginValidation: (req, res, next) => {
+    const schema = Joi.object({
+      email: Joi.string()
+        .email({
+          minDomainSegments: 2,
+          tlds: { allow: ["com", "net"] },
+        })
+        .required()
+        .messages({
+          "string.base": `should be a type of string`,
+          "string.empty": `must contain value`,
+          "any.required": `missing field favorite`,
+        }),
+      password: Joi.string().min(7).max(15).required(),
     });
 
     const validationResalt = schema.validate(req.body);

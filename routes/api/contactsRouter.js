@@ -19,12 +19,13 @@ const {
 
 const { authMiddleware } = require("../../middlewares/authMiddleware");
 const { asyncWrapper } = require("../../helpers/apiHelpers");
+const { isValidId } = require("../../helpers/isValidId");
 
 router.use(authMiddleware);
 
 router.get("/", asyncWrapper(getAllContactsController));
 
-router.get("/:contactId", asyncWrapper(getOneContactByIdController));
+router.get("/:contactId", isValidId, asyncWrapper(getOneContactByIdController));
 
 router.post("/", addContactValidation, asyncWrapper(addOneContactController));
 

@@ -10,7 +10,7 @@ const {
 const registrationController = async (req, res) => {
   const { email, password } = req.body;
 
-  const newUser = await registration(email, password);
+  await registration(email, password);
 
   return res.json({
     status: "success",
@@ -37,9 +37,26 @@ const loginController = async (req, res) => {
   });
 };
 
-const logoutController = async (req, res) => {};
+const logoutController = async (req, res) => {
+  const { _id: userId } = req.user;
+  await logout(userId);
 
-const currentLoginController = async (req, res) => {};
+  return res.json({
+    status: "204",
+    message: "No Content",
+  });
+};
+
+const currentLoginController = async (req, res) => {
+  const { _id: userId } = req.user;
+
+  const currentUser = await currentLogin(userId);
+
+  return res.json({
+    status: "200",
+    currentUser,
+  });
+};
 
 module.exports = {
   registrationController,

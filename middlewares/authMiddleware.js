@@ -6,7 +6,7 @@ const authMiddleware = (req, res, next) => {
   const [tokenType, token] = req.headers["authorization"].split(" ");
 
   if (!token) {
-    next(new NotAuthorizedError("Please, provide a token"));
+    next(new NotAuthorizedError("Not authorized"));
   }
 
   try {

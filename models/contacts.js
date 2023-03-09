@@ -8,13 +8,6 @@ const getAllContacts = async (userId) => {
 
 const getOneContactById = async (contactId, userId) => {
   return Contact.findOne({ _id: contactId, userId });
-
-  // if (!findContact) {
-  //   throw new NotFound(`Not found contact with id '${contactId}'.`);
-  // }
-
-  // return findContact;
-  // return Contact.findOne({ _id: contactId, userId });
 };
 
 const deleteOneContactById = async (contactId, userId) => {
