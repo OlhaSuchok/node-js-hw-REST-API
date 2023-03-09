@@ -14,8 +14,7 @@ const getAllContactsController = async (req, res) => {
 
   const contacts = await getAllContacts(userId);
   res.json({
-    status: "success",
-    code: 200,
+    status: "200",
     data: {
       contacts,
     },
@@ -28,8 +27,7 @@ const getOneContactByIdController = async (req, res) => {
   const findContact = await getOneContactById(contactId, userId);
   if (findContact) {
     return res.json({
-      status: "success",
-      code: 200,
+      status: "200",
       data: {
         findContact,
       },
@@ -48,8 +46,7 @@ const deleteOneContactByIdController = async (req, res) => {
 
   if (result) {
     return res.json({
-      status: "success",
-      code: 200,
+      status: "200",
       message: "contact deleted",
     });
   }
@@ -61,13 +58,10 @@ const deleteOneContactByIdController = async (req, res) => {
 
 const addOneContactController = async (req, res) => {
   const { _id: userId } = req.user;
-  const { isContact, newContact } = await addOneContact(req.body, userId);
-
-  console.log(isContact, newContact);
+  const { newContact } = await addOneContact(req.body, userId);
 
   return res.json({
-    status: "success",
-    code: 201,
+    status: "201",
     message: "create contact",
     data: {
       newContact,
@@ -89,8 +83,7 @@ const updateOneContactByIdController = async (req, res) => {
   }
 
   return res.json({
-    status: "success",
-    code: 200,
+    status: "200",
     message: "contact updated",
     data: {
       updatedContact,
@@ -108,8 +101,7 @@ const updateStatusContactController = async (req, res) => {
   }
 
   return res.json({
-    status: "success",
-    code: 200,
+    status: "200",
     message: "contact updated",
     data: {
       updatedContact,

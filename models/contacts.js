@@ -1,7 +1,5 @@
 const Contact = require("../service/schemas/contacts");
 
-const { NotFound } = require("../helpers/errors");
-
 const getAllContacts = async (userId) => {
   return Contact.find({ userId });
 };

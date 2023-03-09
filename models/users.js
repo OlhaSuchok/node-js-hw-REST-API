@@ -16,16 +16,24 @@ const registration = async (email, password) => {
 
   const user = new User({ email, password });
   await user.save();
+
+  const createdUser = await User.findOne({ email });
+
+  return {
+    email: createdUser.email,
+    subscription: createdUser.subscription,
+  };
 };
 
 const login = async (email, password) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new NotAuthorizedError(`There is no user with email '${email}'`);
+    throw new NotAuthorizedError("Email or password is wrong");
   }
+
   if (!(await bcrypt.compare(password, user.password))) {
-    throw new NotAuthorizedError("Password is wrong");
+    throw new NotAuthorizedError("Email or password is wrong");
   }
 
   const token = jsonwebtoken.sign(

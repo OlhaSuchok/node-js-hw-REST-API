@@ -1,5 +1,3 @@
-const bcrypt = require("bcrypt");
-
 const {
   registration,
   login,
@@ -10,12 +8,11 @@ const {
 const registrationController = async (req, res) => {
   const { email, password } = req.body;
 
-  await registration(email, password);
+  const newUser = await registration(email, password);
 
   return res.json({
-    status: "success",
-    code: 201,
-    message: "Created",
+    status: "201",
+    newUser,
   });
 };
 
@@ -31,7 +28,7 @@ const loginController = async (req, res) => {
   };
 
   return res.json({
-    status: "success",
+    status: "200",
     token,
     user,
   });

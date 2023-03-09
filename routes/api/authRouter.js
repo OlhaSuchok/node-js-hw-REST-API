@@ -22,7 +22,7 @@ router.post(
   registerValidation,
   asyncWrapper(registrationController)
 );
-router.post("/login", loginValidation, asyncWrapper(loginController));
+router.get("/login", loginValidation, asyncWrapper(loginController));
 router.post("/logout", authMiddleware, asyncWrapper(logoutController));
 router.get("/current", authMiddleware, asyncWrapper(currentLoginController));
 
