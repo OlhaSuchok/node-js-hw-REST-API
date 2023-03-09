@@ -7,6 +7,8 @@ const {
   updateStatusContact,
 } = require("../models/contacts");
 
+const { NotFound } = require("../helpers/errors");
+
 const getAllContactsController = async (req, res) => {
   const { _id: userId } = req.user;
 
@@ -33,11 +35,10 @@ const getOneContactByIdController = async (req, res) => {
       },
     });
   }
-  return res.json({
-    status: "error",
-    code: 404,
-    message: `Not found contact with id '${contactId}'.`,
-  });
+
+  if (!findContact) {
+    throw new NotFound(`Not found contact with id '${contactId}'.`);
+  }
 };
 
 const deleteOneContactByIdController = async (req, res) => {
@@ -52,22 +53,17 @@ const deleteOneContactByIdController = async (req, res) => {
       message: "contact deleted",
     });
   }
-  return res.json({
-    status: "error",
-    code: 404,
-    message: "Not found",
-  });
+
+  if (!result) {
+    throw new NotFound(`Not found contact with id '${contactId}'.`);
+  }
 };
 
 const addOneContactController = async (req, res) => {
   const { _id: userId } = req.user;
-  const { newContact, isContact } = await addOneContact(req.body, userId);
+  const { isContact, newContact } = await addOneContact(req.body, userId);
 
-  if (isContact) {
-    return res.status(400).json({
-      message: "a contact with this name is already registered.",
-    });
-  }
+  console.log(isContact, newContact);
 
   return res.json({
     status: "success",
@@ -88,30 +84,27 @@ const updateOneContactByIdController = async (req, res) => {
     userId
   );
 
-  if (updatedContact) {
-    return res.json({
-      status: "success",
-      code: 200,
-      message: "contact updated",
-      data: {
-        updatedContact,
-      },
-    });
+  if (!updatedContact) {
+    throw new NotFound(`Not found contact with id '${contactId}'.`);
   }
-  return res.status(404).json({
-    message: "Not found.",
+
+  return res.json({
+    status: "success",
+    code: 200,
+    message: "contact updated",
+    data: {
+      updatedContact,
+    },
   });
 };
 
 const updateStatusContactController = async (req, res) => {
   const { _id: userId } = req.user;
   const { contactId } = req.params;
-  const updatedContact = await updateStatusContact(contactId, req.body);
+  const updatedContact = await updateStatusContact(contactId, req.body, userId);
 
   if (!updatedContact) {
-    return res.status(404).json({
-      message: "Not found.",
-    });
+    throw new NotFound(`Not found contact with id '${contactId}'.`);
   }
 
   return res.json({

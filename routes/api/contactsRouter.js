@@ -18,27 +18,28 @@ const {
 } = require("../../middlewares/validationMiddleware");
 
 const { authMiddleware } = require("../../middlewares/authMiddleware");
+const { asyncWrapper } = require("../../helpers/apiHelpers");
 
 router.use(authMiddleware);
 
-router.get("/", getAllContactsController);
+router.get("/", asyncWrapper(getAllContactsController));
 
-router.get("/:contactId", getOneContactByIdController);
+router.get("/:contactId", asyncWrapper(getOneContactByIdController));
 
-router.post("/", addContactValidation, addOneContactController);
+router.post("/", addContactValidation, asyncWrapper(addOneContactController));
 
-router.delete("/:contactId", deleteOneContactByIdController);
+router.delete("/:contactId", asyncWrapper(deleteOneContactByIdController));
 
 router.put(
   "/:contactId",
   uptateContactValidation,
-  updateOneContactByIdController
+  asyncWrapper(updateOneContactByIdController)
 );
 
 router.patch(
   "/:contactId",
   updateStatusContactValidation,
-  updateStatusContactController
+  asyncWrapper(updateStatusContactController)
 );
 
 module.exports = router;

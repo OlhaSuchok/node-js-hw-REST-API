@@ -1,11 +1,20 @@
 const Contact = require("../service/schemas/contacts");
 
+const { NotFound } = require("../helpers/errors");
+
 const getAllContacts = async (userId) => {
   return Contact.find({ userId });
 };
 
 const getOneContactById = async (contactId, userId) => {
   return Contact.findOne({ _id: contactId, userId });
+
+  // if (!findContact) {
+  //   throw new NotFound(`Not found contact with id '${contactId}'.`);
+  // }
+
+  // return findContact;
+  // return Contact.findOne({ _id: contactId, userId });
 };
 
 const deleteOneContactById = async (contactId, userId) => {
