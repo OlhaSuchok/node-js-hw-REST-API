@@ -3,6 +3,7 @@ const {
   login,
   logout,
   currentLogin,
+  updateUserSubscription,
 } = require("../models/users");
 
 const registrationController = async (req, res) => {
@@ -55,9 +56,23 @@ const currentLoginController = async (req, res) => {
   });
 };
 
+const updateUserSubscriptionController = async (req, res) => {
+  const { _id: userId } = req.user;
+
+  const { subscription } = req.body;
+
+  await updateUserSubscription(userId, req.body);
+
+  return res.json({
+    status: "200",
+    message: `user subscription updated to '${subscription}'`,
+  });
+};
+
 module.exports = {
   registrationController,
   loginController,
   logoutController,
   currentLoginController,
+  updateUserSubscriptionController,
 };

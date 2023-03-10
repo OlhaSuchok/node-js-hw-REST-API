@@ -5,6 +5,7 @@ const User = require("../service/schemas/users");
 const {
   NotAuthorizedError,
   RegistrationConflictError,
+  WrongParametersError,
 } = require("../helpers/errors");
 
 const registration = async (email, password) => {
@@ -69,10 +70,37 @@ const currentLogin = async (userId) => {
 
   return currentUser;
 };
+const updateUserSubscription = async (userId, body) => {
+  const user = await User.findById(userId);
+  const subscription = body.subscription;
+
+  if (!user) {
+    throw new NotAuthorized("Not authorized");
+  }
+
+  if (
+    subscription !== "starter" &&
+    subscription !== "pro" &&
+    subscription !== "business"
+  ) {
+    throw new WrongParametersError(
+      "Enter subscription type 'starter', 'pro' or 'business'"
+    );
+  }
+
+  if (subscription === user.subscription) {
+    throw new WrongParametersError(
+      `Subscription '${subscription}' is already in use by account`
+    );
+  }
+
+  await User.findByIdAndUpdate(userId, { subscription });
+};
 
 module.exports = {
   registration,
   login,
   logout,
   currentLogin,
+  updateUserSubscription,
 };

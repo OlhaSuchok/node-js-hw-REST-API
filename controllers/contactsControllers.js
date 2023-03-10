@@ -7,7 +7,7 @@ const {
   updateStatusContact,
 } = require("../models/contacts");
 
-const { NotFound, RegistrationConflictError } = require("../helpers/errors");
+const { NotFound } = require("../helpers/errors");
 
 const getAllContactsController = async (req, res) => {
   const { _id: userId } = req.user;
