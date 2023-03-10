@@ -1,7 +1,5 @@
 const Joi = require("joi");
 
-// const { WrongParametersError } = require("../helpers/errors");
-
 module.exports = {
   addContactValidation: (req, res, next) => {
     const schema = Joi.object({

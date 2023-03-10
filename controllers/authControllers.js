@@ -65,7 +65,7 @@ const updateUserSubscriptionController = async (req, res) => {
 
   return res.json({
     status: "200",
-    message: `user subscription updated to '${subscription}'`,
+    message: `User subscription updated to '${subscription}'`,
   });
 };
 

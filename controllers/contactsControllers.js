@@ -50,7 +50,7 @@ const deleteOneContactByIdController = async (req, res) => {
   if (result) {
     return res.json({
       status: "200",
-      message: "contact deleted",
+      message: "Contact deleted",
     });
   }
 
@@ -86,7 +86,7 @@ const updateOneContactByIdController = async (req, res) => {
 
   return res.json({
     status: "200",
-    message: "contact updated",
+    message: "Contact updated",
     data: {
       updatedContact,
     },
@@ -104,7 +104,7 @@ const updateStatusContactController = async (req, res) => {
 
   return res.json({
     status: "200",
-    message: "contact updated",
+    message: "Contact updated",
     data: {
       updatedContact,
     },
