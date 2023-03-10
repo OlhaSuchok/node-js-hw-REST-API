@@ -27,13 +27,13 @@ const getAllContactsController = async (req, res) => {
 const getOneContactByIdController = async (req, res) => {
   const { _id: userId } = req.user;
   const { contactId } = req.params;
+
   const findContact = await getOneContactById(contactId, userId);
+
   if (findContact) {
     return res.json({
       status: "200",
-      data: {
-        findContact,
-      },
+      findContact,
     });
   }
 
@@ -45,6 +45,7 @@ const getOneContactByIdController = async (req, res) => {
 const deleteOneContactByIdController = async (req, res) => {
   const { _id: userId } = req.user;
   const { contactId } = req.params;
+
   const result = await deleteOneContactById(contactId, userId);
 
   if (result) {

@@ -49,7 +49,7 @@ const login = async (email, password) => {
 };
 
 const logout = async (userId) => {
-  const user = await User.findByIdAndUpdate(userId, { token: "" });
+  const user = await User.findByIdAndUpdate(userId, { token: null });
 
   if (!user) {
     throw new NotAuthorizedError("Not authorized");
