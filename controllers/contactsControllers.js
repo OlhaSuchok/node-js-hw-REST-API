@@ -7,16 +7,19 @@ const {
   updateStatusContact,
 } = require("../models/contacts");
 
-const { NotFound } = require("../helpers/errors");
+const { NotFound, RegistrationConflictError } = require("../helpers/errors");
 
 const getAllContactsController = async (req, res) => {
   const { _id: userId } = req.user;
+  const { page = 1, limit = 20 } = req.query;
 
-  const contacts = await getAllContacts(userId);
+  const contacts = await getAllContacts(userId, { page, limit });
   res.json({
     status: "200",
     data: {
       contacts,
+      limit: parseInt(limit) > 20 ? 20 : parseInt(limit),
+      page: parseInt(page),
     },
   });
 };
@@ -58,14 +61,13 @@ const deleteOneContactByIdController = async (req, res) => {
 
 const addOneContactController = async (req, res) => {
   const { _id: userId } = req.user;
-  const { newContact } = await addOneContact(req.body, userId);
+
+  const newContact = await addOneContact(req.body, userId);
 
   return res.json({
     status: "201",
     message: "create contact",
-    data: {
-      newContact,
-    },
+    newContact,
   });
 };
 

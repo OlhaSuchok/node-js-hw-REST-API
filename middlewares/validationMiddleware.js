@@ -1,6 +1,6 @@
 const Joi = require("joi");
 
-const { WrongParametersError } = require("../helpers/errors");
+// const { WrongParametersError } = require("../helpers/errors");
 
 module.exports = {
   addContactValidation: (req, res, next) => {
