@@ -19,7 +19,6 @@ const {
 
 const { authMiddleware } = require("../../middlewares/authMiddleware");
 const { asyncWrapper } = require("../../helpers/apiHelpers");
-// const { isValidId } = require("../../helpers/isValidId");
 
 router.use(authMiddleware);
 router.get("/", asyncWrapper(getAllContactsController));
