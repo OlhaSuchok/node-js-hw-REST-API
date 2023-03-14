@@ -7,106 +7,105 @@ const {
   updateStatusContact,
 } = require("../models/contacts");
 
+const { NotFound } = require("../helpers/errors");
+
 const getAllContactsController = async (req, res) => {
-  const contacts = await getAllContacts();
+  const { _id: userId } = req.user;
+  const { page = 1, limit = 20 } = req.query;
+
+  const contacts = await getAllContacts(userId, { page, limit });
   res.json({
-    status: "success",
-    code: 200,
+    status: "200",
     data: {
       contacts,
+      limit: parseInt(limit) > 20 ? 20 : parseInt(limit),
+      page: parseInt(page),
     },
   });
 };
 
 const getOneContactByIdController = async (req, res) => {
+  const { _id: userId } = req.user;
   const { contactId } = req.params;
-  const findContact = await getOneContactById(contactId);
+
+  const findContact = await getOneContactById(contactId, userId);
+
   if (findContact) {
     return res.json({
-      status: "success",
-      code: 200,
-      data: {
-        findContact,
-      },
+      status: "200",
+      findContact,
     });
   }
-  return res.json({
-    status: "error",
-    code: 404,
-    message: `Not found contact with id '${contactId}'.`,
-  });
+
+  if (!findContact) {
+    throw new NotFound(`Not found contact with id '${contactId}'.`);
+  }
 };
 
 const deleteOneContactByIdController = async (req, res) => {
+  const { _id: userId } = req.user;
   const { contactId } = req.params;
-  const result = await deleteOneContactById(contactId);
+
+  const result = await deleteOneContactById(contactId, userId);
 
   if (result) {
     return res.json({
-      status: "success",
-      code: 200,
-      message: "contact deleted",
+      status: "200",
+      message: "Contact deleted",
     });
   }
-  return res.json({
-    status: "error",
-    code: 404,
-    message: "Not found",
-  });
+
+  if (!result) {
+    throw new NotFound(`Not found contact with id '${contactId}'.`);
+  }
 };
 
 const addOneContactController = async (req, res) => {
-  const { newContact, isContact } = await addOneContact(req.body);
+  const { _id: userId } = req.user;
 
-  if (isContact) {
-    return res.status(400).json({
-      message: "a contact with this name is already registered.",
-    });
-  }
+  const newContact = await addOneContact(req.body, userId);
 
   return res.json({
-    status: "success",
-    code: 201,
+    status: "201",
     message: "create contact",
-    data: {
-      newContact,
-    },
+    newContact,
   });
 };
 
 const updateOneContactByIdController = async (req, res) => {
+  const { _id: userId } = req.user;
   const { contactId } = req.params;
-  const updatedContact = await updateOneContactById(contactId, req.body);
+  const updatedContact = await updateOneContactById(
+    contactId,
+    req.body,
+    userId
+  );
 
-  if (updatedContact) {
-    return res.json({
-      status: "success",
-      code: 200,
-      message: "contact updated",
-      data: {
-        updatedContact,
-      },
-    });
+  if (!updatedContact) {
+    throw new NotFound(`Not found contact with id '${contactId}'.`);
   }
-  return res.status(404).json({
-    message: "Not found.",
+
+  return res.json({
+    status: "200",
+    message: "Contact updated",
+    data: {
+      updatedContact,
+    },
   });
 };
 
 const updateStatusContactController = async (req, res) => {
+  const { _id: userId } = req.user;
   const { contactId } = req.params;
-  const updatedContact = await updateStatusContact(contactId, req.body);
+  const updatedContact = await updateStatusContact(contactId, req.body, userId);
 
   if (!updatedContact) {
-    return res.status(404).json({
-      message: "Not found.",
-    });
+    throw new NotFound(`Not found contact with id '${contactId}'.`);
   }
 
   return res.json({
-    status: "success",
-    code: 200,
-    message: "contact updated",
+    status: "200",
+    message: "Contact updated",
     data: {
       updatedContact,
     },
