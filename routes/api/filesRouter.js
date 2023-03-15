@@ -2,6 +2,8 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
+const fs = require("fs/promises");
+const { authMiddleware } = require("../../middlewares/authMiddleware");
 
 const FILE_DIR = path.resolve("./tmp");
 const router = express.Router();
@@ -19,6 +21,16 @@ const { asyncWrapper } = require("../../helpers/apiHelpers");
 const { uploadController } = require("../../controllers/filesControllers");
 
 const uploadMiddlewar = multer({ storage });
+
+// const books = []
+
+// router.use(authMiddleware);
+
+// router.get(
+//   "/upload",
+//   uploadMiddlewar.single("avatar"),
+//   asyncWrapper(uploadController)
+// );
 
 router.post(
   "/upload",
