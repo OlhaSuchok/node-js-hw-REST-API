@@ -17,8 +17,8 @@ const usersSchema = new Schema({
     enum: ["starter", "pro", "business"],
     default: "starter",
   },
+  avatarURL: { type: String },
   token: String,
-  avatarURL: String,
 });
 
 usersSchema.pre("save", async function () {

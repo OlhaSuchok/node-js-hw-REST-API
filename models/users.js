@@ -1,6 +1,11 @@
 const jsonwebtoken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const User = require("../service/schemas/users");
+const gravatar = require("gravatar");
+const fs = require("fs/promises");
+const path = require("path");
+const { v4: uuidv4 } = require("uuid");
+const avatarsDir = path.join(__dirname, "../public", "avatars");
 
 const {
   NotAuthorizedError,
@@ -15,7 +20,9 @@ const registration = async (email, password) => {
     throw new RegistrationConflictError(`Email '${email}' in use`);
   }
 
-  const user = new User({ email, password });
+  const avatarURL = gravatar.url(email);
+
+  const user = new User({ email, password, avatarURL });
   await user.save();
 
   const createdUser = await User.findOne({ email });
@@ -23,6 +30,7 @@ const registration = async (email, password) => {
   return {
     email: createdUser.email,
     subscription: createdUser.subscription,
+    avatarURL,
   };
 };
 
@@ -70,6 +78,7 @@ const currentLogin = async (userId) => {
 
   return currentUser;
 };
+
 const updateUserSubscription = async (userId, body) => {
   const user = await User.findById(userId);
   const subscription = body.subscription;
@@ -97,10 +106,42 @@ const updateUserSubscription = async (userId, body) => {
   await User.findByIdAndUpdate(userId, { subscription });
 };
 
+const upload = async (tempUpload, originalname) => {
+  const filename = `${uuidv4()}_${originalname}`;
+
+  const resultUpload = path.join(avatarsDir, filename);
+  await fs.rename(tempUpload, resultUpload);
+
+  const cover = path.join("avatars", filename);
+
+  return cover;
+};
+
+const updateAvatar = async (userId, tempUpload, originalname) => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new NotAuthorized("Not authorized");
+  }
+
+  const filename = `${userId}_${originalname}`;
+  const resultUpload = path.join(avatarsDir, filename);
+
+  await fs.rename(tempUpload, resultUpload);
+
+  const avatarURL = path.join("avatars", filename);
+
+  await User.findByIdAndUpdate(userId, { avatarURL });
+
+  return avatarURL;
+};
+
 module.exports = {
   registration,
   login,
   logout,
   currentLogin,
   updateUserSubscription,
+  upload,
+  updateAvatar,
 };

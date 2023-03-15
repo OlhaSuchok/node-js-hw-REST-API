@@ -1,9 +1,14 @@
+const { v4: uuidv4 } = require("uuid");
+const avatars = [];
+
 const {
   registration,
   login,
   logout,
   currentLogin,
   updateUserSubscription,
+  upload,
+  updateAvatar,
 } = require("../models/users");
 
 const registrationController = async (req, res) => {
@@ -37,6 +42,7 @@ const loginController = async (req, res) => {
 
 const logoutController = async (req, res) => {
   const { _id: userId } = req.user;
+
   await logout(userId);
 
   return res.json({
@@ -58,7 +64,6 @@ const currentLoginController = async (req, res) => {
 
 const updateUserSubscriptionController = async (req, res) => {
   const { _id: userId } = req.user;
-
   const { subscription } = req.body;
 
   await updateUserSubscription(userId, req.body);
@@ -69,10 +74,43 @@ const updateUserSubscriptionController = async (req, res) => {
   });
 };
 
+const uploadController = async (req, res) => {
+  const { path: tempUpload, originalname } = req.file;
+
+  const cover = await upload(tempUpload, originalname);
+
+  const newAvatar = {
+    id: uuidv4(),
+    ...req.body,
+    cover,
+  };
+
+  avatars.push(newAvatar);
+
+  res.json({
+    status: "success",
+    avatars,
+  });
+};
+
+const updateAvatarController = async (req, res) => {
+  const { _id: userId } = req.user;
+  const { path: tempUpload, originalname } = req.file;
+
+  const avatarURL = await updateAvatar(userId, tempUpload, originalname);
+
+  res.json({
+    status: "avatar updated successfully",
+    avatarURL,
+  });
+};
+
 module.exports = {
   registrationController,
   loginController,
   logoutController,
   currentLoginController,
   updateUserSubscriptionController,
+  uploadController,
+  updateAvatarController,
 };
