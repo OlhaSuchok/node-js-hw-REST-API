@@ -5,7 +5,8 @@ const gravatar = require("gravatar");
 const fs = require("fs/promises");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
-const avatarsDir = path.join(__dirname, "../public", "avatars");
+const Jimp = require("jimp");
+const avatarsDir = path.join(__dirname, "../tmp");
 
 const {
   NotAuthorizedError,
@@ -124,14 +125,24 @@ const updateAvatar = async (userId, tempUpload, originalname) => {
     throw new NotAuthorized("Not authorized");
   }
 
-  const filename = `${userId}_${originalname}`;
+  const filename = `${uuidv4()}_${originalname}`;
   const resultUpload = path.join(avatarsDir, filename);
-
   await fs.rename(tempUpload, resultUpload);
-
   const avatarURL = path.join("avatars", filename);
-
   await User.findByIdAndUpdate(userId, { avatarURL });
+
+  const updatedSizeUser = await User.findById(userId);
+
+  if (updatedSizeUser) {
+    Jimp.read(`./tmp/${filename}`, (err, lenna) => {
+      if (err) throw err;
+      lenna.resize(100, 100).write(`./public/avatars/${"updated" + filename}`);
+    });
+
+    await fs.unlink(`./tmp/${filename}`, (err) => {
+      if (err) throw err;
+    });
+  }
 
   return avatarURL;
 };
