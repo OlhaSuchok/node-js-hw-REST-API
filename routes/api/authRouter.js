@@ -1,9 +1,12 @@
 const express = require("express");
-
 const router = express.Router();
+const path = require("path");
 
 const { asyncWrapper } = require("../../helpers/apiHelpers");
 const { authMiddleware } = require("../../middlewares/authMiddleware");
+const { uploadMiddleware } = require("../../middlewares/uploadMiddleware");
+
+const FILE_DIR = path.resolve("./tmp");
 
 const {
   registerValidation,
@@ -16,6 +19,8 @@ const {
   logoutController,
   currentLoginController,
   updateUserSubscriptionController,
+  uploadController,
+  updateAvatarController,
 } = require("../../controllers/authControllers");
 
 router.post(
@@ -31,5 +36,20 @@ router.patch(
   authMiddleware,
   asyncWrapper(updateUserSubscriptionController)
 );
+
+router.post(
+  "/upload",
+  uploadMiddleware.single("avatar"),
+  asyncWrapper(uploadController)
+);
+
+router.patch(
+  "/avatars",
+  authMiddleware,
+  uploadMiddleware.single("avatar"),
+  asyncWrapper(updateAvatarController)
+);
+
+router.use("/download", express.static(FILE_DIR));
 
 module.exports = router;
