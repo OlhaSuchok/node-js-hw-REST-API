@@ -1,4 +1,47 @@
 // =================================================================================
+// Login middleware test
+const mongoose = require("mongoose");
+const request = require("supertest");
+require("dotenv").config();
+
+const app = require("../app");
+
+mongoose.set("strictQuery", false);
+const { CONNECTION_STRING, PORT } = process.env;
+
+describe("test auth routes", () => {
+  let server;
+  beforeAll(() => (server = app.listen(PORT)));
+  afterAll(() => server.close());
+
+  beforeEach(async () => {
+    await mongoose.connect(CONNECTION_STRING, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+  });
+
+  afterEach(async () => {
+    await mongoose.connection.close();
+  });
+
+  it("test login route", async () => {
+    const mEmail = "1olgasuchok@example.com";
+    const mPassword = "1234567";
+
+    const response = await request(app).get("/api/users/login").send({
+      email: mEmail,
+      password: mPassword,
+    });
+
+    expect(response.statusCode).toBe(200);
+    expect(response.body.token).toBeDefined();
+    expect(typeof response.body.user.email).toBe("string");
+    expect(typeof response.body.user.subscription).toBe("string");
+  });
+});
+
+// =================================================================================
 // GetOneContactById middleware test
 // const { getOneContactById } = require("../models/contacts");
 // const Contact = require("../service/schemas/contacts");
