@@ -1,4 +1,8 @@
 const { v4: uuidv4 } = require("uuid");
+// const sgMail = require("@sendgrid/mail");
+
+// sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
 const avatars = [];
 
 const {

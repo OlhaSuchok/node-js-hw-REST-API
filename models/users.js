@@ -7,6 +7,11 @@ const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const Jimp = require("jimp");
 const avatarsDir = path.join(__dirname, "../tmp");
+const sgMail = require("@sendgrid/mail");
+
+require("dotenv").config();
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const {
   NotAuthorizedError,
@@ -27,6 +32,16 @@ const registration = async (email, password) => {
   await user.save();
 
   const createdUser = await User.findOne({ email });
+
+  const msg = {
+    to: email,
+    from: "suchok_olya@ukr.net",
+    subject: "Thank you for registration!",
+    text: "and easy to do anywhere, even with Node.js",
+    html: "<h1>and easy to do anywhere, even with Node.js</h1>",
+  };
+
+  await sgMail.send(msg);
 
   return {
     email: createdUser.email,
