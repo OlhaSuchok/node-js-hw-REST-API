@@ -17,6 +17,7 @@ const {
   NotAuthorizedError,
   RegistrationConflictError,
   WrongParametersError,
+  NotFound,
 } = require("../helpers/errors");
 
 const registration = async (email, password) => {
@@ -28,17 +29,30 @@ const registration = async (email, password) => {
 
   const avatarURL = gravatar.url(email);
 
-  const user = new User({ email, password, avatarURL });
+  const user = new User({
+    email,
+    password,
+    avatarURL,
+    verificationToken: uuidv4(),
+  });
   await user.save();
 
   const createdUser = await User.findOne({ email });
 
+  console.log(createdUser);
+
+  const verifyToken = createdUser.verificationToken;
+
+  console.log("user.verificationToken", verifyToken);
+  console.log("createdUser.verificationToken", verifyToken);
+
   const msg = {
     to: email,
     from: "suchok_olya@ukr.net",
-    subject: "Thank you for registration!",
+    subject: "Verify your email",
     text: "and easy to do anywhere, even with Node.js",
-    html: "<h1>and easy to do anywhere, even with Node.js</h1>",
+    html: `Please, <a href="http:localhost:${process.env.PORT}/api/users/verify/${verifyToken}">confirm<a/> your email address.`,
+    // html: `Please, confirm your email address. POST http:localhost:${process.env.PORT}/api/users/verify/${verifyToken}`,
   };
 
   await sgMail.send(msg);
@@ -47,11 +61,41 @@ const registration = async (email, password) => {
     email: createdUser.email,
     subscription: createdUser.subscription,
     avatarURL,
+    verificationToken: createdUser.verificationToken,
   };
 };
 
+const registrationConfirmation = async (verificationToken) => {
+  const varificationUser = await User.findOne({ verificationToken });
+
+  if (!varificationUser) {
+    throw new NotFound("User not found");
+  }
+
+  const user = await User.findByIdAndUpdate(varificationUser._id, {
+    verificationToken: null,
+    verify: true,
+  });
+
+  if (!user) {
+    throw new NotFound("User not found");
+  }
+
+  const msg = {
+    to: user.email,
+    from: "suchok_olya@ukr.net",
+    subject: "Thank you for registration!",
+    text: "and easy to do anywhere, even with Node.js",
+    html: "<h1>and easy to do anywhere, even with Node.js</h1>",
+  };
+
+  await sgMail.send(msg);
+
+  return user;
+};
+
 const login = async (email, password) => {
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email, verify: true });
 
   if (!user) {
     throw new NotAuthorizedError("Email or password is wrong");
@@ -164,6 +208,7 @@ const updateAvatar = async (userId, tempUpload, originalname) => {
 
 module.exports = {
   registration,
+  registrationConfirmation,
   login,
   logout,
   currentLogin,

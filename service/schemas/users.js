@@ -1,6 +1,5 @@
 const { Schema, model } = require("mongoose");
 const bcrypt = require("bcrypt");
-const { func } = require("joi");
 
 const usersSchema = new Schema({
   password: {
@@ -19,6 +18,14 @@ const usersSchema = new Schema({
   },
   avatarURL: { type: String },
   token: String,
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    required: [true, "Verify token is required"],
+  },
 });
 
 usersSchema.pre("save", async function () {

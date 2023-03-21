@@ -15,6 +15,7 @@ const {
 
 const {
   registrationController,
+  registrationConfirmationController,
   loginController,
   logoutController,
   currentLoginController,
@@ -27,6 +28,10 @@ router.post(
   "/register",
   registerValidation,
   asyncWrapper(registrationController)
+);
+router.get(
+  "/verify/:verificationToken",
+  asyncWrapper(registrationConfirmationController)
 );
 router.get("/login", loginValidation, asyncWrapper(loginController));
 router.post("/logout", authMiddleware, asyncWrapper(logoutController));

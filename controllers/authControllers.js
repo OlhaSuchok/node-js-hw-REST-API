@@ -1,12 +1,10 @@
 const { v4: uuidv4 } = require("uuid");
-// const sgMail = require("@sendgrid/mail");
-
-// sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const avatars = [];
 
 const {
   registration,
+  registrationConfirmation,
   login,
   logout,
   currentLogin,
@@ -23,6 +21,20 @@ const registrationController = async (req, res) => {
   return res.json({
     status: "201",
     newUser,
+  });
+};
+
+const registrationConfirmationController = async (req, res) => {
+  const { verificationToken } = req.params;
+
+  const user = await registrationConfirmation(verificationToken);
+
+  console.log("verificationToken", verificationToken);
+  console.log("user", user);
+
+  return res.json({
+    status: "200",
+    message: "Verification successful",
   });
 };
 
@@ -111,6 +123,7 @@ const updateAvatarController = async (req, res) => {
 
 module.exports = {
   registrationController,
+  registrationConfirmationController,
   loginController,
   logoutController,
   currentLoginController,
