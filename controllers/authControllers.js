@@ -5,6 +5,7 @@ const avatars = [];
 const {
   registration,
   registrationConfirmation,
+  resendConfirmation,
   login,
   logout,
   currentLogin,
@@ -27,14 +28,22 @@ const registrationController = async (req, res) => {
 const registrationConfirmationController = async (req, res) => {
   const { verificationToken } = req.params;
 
-  const user = await registrationConfirmation(verificationToken);
-
-  console.log("verificationToken", verificationToken);
-  console.log("user", user);
+  await registrationConfirmation(verificationToken);
 
   return res.json({
     status: "200",
     message: "Verification successful",
+  });
+};
+
+const resendConfirmationController = async (req, res) => {
+  const { email } = req.body;
+
+  await resendConfirmation(email);
+
+  return res.json({
+    status: "200",
+    message: "Verification email sent",
   });
 };
 
@@ -124,6 +133,7 @@ const updateAvatarController = async (req, res) => {
 module.exports = {
   registrationController,
   registrationConfirmationController,
+  resendConfirmationController,
   loginController,
   logoutController,
   currentLoginController,

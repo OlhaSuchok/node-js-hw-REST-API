@@ -175,4 +175,58 @@ module.exports = {
     }
     next();
   },
+
+  // registrationConfirmationValidation: (req, res, next) => {
+  //   const schema = Joi.object({
+  //     email: Joi.string()
+  //       .email({
+  //         minDomainSegments: 2,
+  //         tlds: { allow: ["com", "net"] },
+  //       })
+  //       .required()
+  //       .messages({
+  //         "string.base": `should be a type of string`,
+  //         "string.empty": `must contain value`,
+  //         "any.required": `missing required field email`,
+  //       }),
+  //   });
+
+  //   const validationResalt = schema.validate(req.body);
+
+  //   if (validationResalt.error) {
+  //     return res.json({
+  //       status: "error",
+  //       code: 400,
+  //       message: validationResalt.error.details[0].message,
+  //     });
+  //   }
+  //   next();
+  // },
+
+  resendConfirmationValidation: (req, res, next) => {
+    const schema = Joi.object({
+      email: Joi.string()
+        .email({
+          minDomainSegments: 2,
+          tlds: { allow: ["com", "net"] },
+        })
+        .required()
+        .messages({
+          "string.base": `should be a type of string`,
+          "string.empty": `must contain value`,
+          "any.required": `missing required field email`,
+        }),
+    });
+
+    const validationResalt = schema.validate(req.body);
+
+    if (validationResalt.error) {
+      return res.json({
+        status: "error",
+        code: 400,
+        message: validationResalt.error.details[0].message,
+      });
+    }
+    next();
+  },
 };

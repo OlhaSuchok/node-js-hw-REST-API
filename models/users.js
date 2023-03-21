@@ -18,6 +18,7 @@ const {
   RegistrationConflictError,
   WrongParametersError,
   NotFound,
+  BadRequest,
 } = require("../helpers/errors");
 
 const registration = async (email, password) => {
@@ -35,26 +36,20 @@ const registration = async (email, password) => {
     avatarURL,
     verificationToken: uuidv4(),
   });
+
   await user.save();
 
   const createdUser = await User.findOne({ email });
 
-  console.log(createdUser);
-
   const verifyToken = createdUser.verificationToken;
-
-  console.log("user.verificationToken", verifyToken);
-  console.log("createdUser.verificationToken", verifyToken);
 
   const msg = {
     to: email,
     from: "suchok_olya@ukr.net",
-    subject: "Verify your email",
-    text: "and easy to do anywhere, even with Node.js",
+    subject: "Verify your email!",
+    text: `Please, <a href="http:localhost:${process.env.PORT}/api/users/verify/${verifyToken}">confirm<a/> your email address.`,
     html: `Please, <a href="http:localhost:${process.env.PORT}/api/users/verify/${verifyToken}">confirm<a/> your email address.`,
-    // html: `Please, confirm your email address. POST http:localhost:${process.env.PORT}/api/users/verify/${verifyToken}`,
   };
-
   await sgMail.send(msg);
 
   return {
@@ -85,11 +80,40 @@ const registrationConfirmation = async (verificationToken) => {
     to: user.email,
     from: "suchok_olya@ukr.net",
     subject: "Thank you for registration!",
-    text: "and easy to do anywhere, even with Node.js",
+    text: "<h1>and easy to do anywhere, even with Node.js</h1>",
     html: "<h1>and easy to do anywhere, even with Node.js</h1>",
   };
 
   await sgMail.send(msg);
+
+  return user;
+};
+
+const resendConfirmation = async (email) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new NotFound("User not found");
+  }
+
+  if (user.verify === true) {
+    throw new BadRequest("Verification has already been passed");
+  }
+
+  const msg = {
+    to: user.email,
+    from: "suchok_olya@ukr.net",
+    subject: "Verify your email!",
+    text: `Please, <a href="http:localhost:${process.env.PORT}/api/users/verify/${user.verificationToken}">confirm<a/> your email address.`,
+    html: `Please, <a href="http:localhost:${process.env.PORT}/api/users/verify/${user.verificationToken}">confirm<a/> your email address.`,
+  };
+
+  await sgMail.send(msg);
+
+  await User.findByIdAndUpdate(user._id, {
+    verificationToken: null,
+    verify: true,
+  });
 
   return user;
 };
@@ -209,6 +233,7 @@ const updateAvatar = async (userId, tempUpload, originalname) => {
 module.exports = {
   registration,
   registrationConfirmation,
+  resendConfirmation,
   login,
   logout,
   currentLogin,
