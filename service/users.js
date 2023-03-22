@@ -1,17 +1,24 @@
 const jsonwebtoken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const User = require("../service/schemas/users");
+const User = require("../db/schemas/users");
 const gravatar = require("gravatar");
 const fs = require("fs/promises");
 const path = require("path");
 const { v4: uuidv4 } = require("uuid");
 const Jimp = require("jimp");
 const avatarsDir = path.join(__dirname, "../tmp");
+const sgMail = require("@sendgrid/mail");
+
+require("dotenv").config();
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const {
   NotAuthorizedError,
   RegistrationConflictError,
   WrongParametersError,
+  NotFound,
+  BadRequest,
 } = require("../helpers/errors");
 
 const registration = async (email, password) => {
@@ -23,27 +30,104 @@ const registration = async (email, password) => {
 
   const avatarURL = gravatar.url(email);
 
-  const user = new User({ email, password, avatarURL });
+  const user = new User({
+    email,
+    password,
+    avatarURL,
+    verificationToken: uuidv4(),
+  });
+
   await user.save();
 
   const createdUser = await User.findOne({ email });
+
+  const verifyToken = createdUser.verificationToken;
+
+  const msg = {
+    to: email,
+    from: process.env.EMAIL,
+    subject: "Verify your email!",
+    text: `Please, <a href="${process.env.BASE_URL}/api/users/verify/${verifyToken}">confirm<a/> your email address.`,
+    html: `Please, <a href="${process.env.BASE_URL}/api/users/verify/${verifyToken}">confirm<a/> your email address.`,
+  };
+  await sgMail.send(msg);
 
   return {
     email: createdUser.email,
     subscription: createdUser.subscription,
     avatarURL,
+    verificationToken: createdUser.verificationToken,
   };
+};
+
+const registrationConfirmation = async (verificationToken) => {
+  const varificationUser = await User.findOne({ verificationToken });
+
+  if (!varificationUser) {
+    throw new NotFound("User not found");
+  }
+
+  const user = await User.findByIdAndUpdate(varificationUser._id, {
+    verificationToken: null,
+    verify: true,
+  });
+
+  if (!user) {
+    throw new NotFound("User not found");
+  }
+
+  const msg = {
+    to: user.email,
+    from: process.env.EMAIL,
+    subject: "Thank you for registration!",
+    text: "<h1>and easy to do anywhere, even with Node.js</h1>",
+    html: "<h1>and easy to do anywhere, even with Node.js</h1>",
+  };
+
+  await sgMail.send(msg);
+
+  return user;
+};
+
+const resendConfirmation = async (email) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new NotFound("User not found");
+  }
+
+  if (user.verify === true) {
+    throw new BadRequest("Verification has already been passed");
+  }
+
+  const msg = {
+    to: user.email,
+    from: process.env.EMAIL,
+    subject: "Verify your email!",
+    text: `Please, <a href="${process.env.BASE_URL}/api/users/verify/${user.verificationToken}">confirm<a/> your email address.`,
+    html: `Please, <a href="${process.env.BASE_URL}/api/users/verify/${user.verificationToken}">confirm<a/> your email address.`,
+  };
+
+  await sgMail.send(msg);
+
+  return user;
 };
 
 const login = async (email, password) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    throw new NotAuthorizedError("Email or password is wrong");
+    throw new NotAuthorizedError("Email or password is wrong.");
+  }
+
+  if (user.verify === false) {
+    throw new NotAuthorizedError(
+      `The email address '${email}' is not verified.`
+    );
   }
 
   if (!(await bcrypt.compare(password, user.password))) {
-    throw new NotAuthorizedError("Email or password is wrong");
+    throw new NotAuthorizedError("Email or password is wrong.");
   }
 
   const token = jsonwebtoken.sign(
@@ -149,6 +233,8 @@ const updateAvatar = async (userId, tempUpload, originalname) => {
 
 module.exports = {
   registration,
+  registrationConfirmation,
+  resendConfirmation,
   login,
   logout,
   currentLogin,

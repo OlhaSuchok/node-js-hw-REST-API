@@ -1,15 +1,18 @@
 const { v4: uuidv4 } = require("uuid");
+
 const avatars = [];
 
 const {
   registration,
+  registrationConfirmation,
+  resendConfirmation,
   login,
   logout,
   currentLogin,
   updateUserSubscription,
   upload,
   updateAvatar,
-} = require("../models/users");
+} = require("../service/users");
 
 const registrationController = async (req, res) => {
   const { email, password } = req.body;
@@ -19,6 +22,28 @@ const registrationController = async (req, res) => {
   return res.json({
     status: "201",
     newUser,
+  });
+};
+
+const registrationConfirmationController = async (req, res) => {
+  const { verificationToken } = req.params;
+
+  await registrationConfirmation(verificationToken);
+
+  return res.json({
+    status: "200",
+    message: "Verification successful",
+  });
+};
+
+const resendConfirmationController = async (req, res) => {
+  const { email } = req.body;
+
+  await resendConfirmation(email);
+
+  return res.json({
+    status: "200",
+    message: "Verification email sent",
   });
 };
 
@@ -107,6 +132,8 @@ const updateAvatarController = async (req, res) => {
 
 module.exports = {
   registrationController,
+  registrationConfirmationController,
+  resendConfirmationController,
   loginController,
   logoutController,
   currentLoginController,

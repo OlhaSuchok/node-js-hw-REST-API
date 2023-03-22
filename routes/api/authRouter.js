@@ -11,10 +11,13 @@ const FILE_DIR = path.resolve("./tmp");
 const {
   registerValidation,
   loginValidation,
+  resendConfirmationValidation,
 } = require("../../middlewares/validationMiddleware");
 
 const {
   registrationController,
+  registrationConfirmationController,
+  resendConfirmationController,
   loginController,
   logoutController,
   currentLoginController,
@@ -28,6 +31,15 @@ router.post(
   registerValidation,
   asyncWrapper(registrationController)
 );
+router.get(
+  "/verify/:verificationToken",
+  asyncWrapper(registrationConfirmationController)
+);
+router.post(
+  "/verify",
+  resendConfirmationValidation,
+  asyncWrapper(resendConfirmationController)
+);
 router.get("/login", loginValidation, asyncWrapper(loginController));
 router.post("/logout", authMiddleware, asyncWrapper(logoutController));
 router.get("/current", authMiddleware, asyncWrapper(currentLoginController));
@@ -36,13 +48,11 @@ router.patch(
   authMiddleware,
   asyncWrapper(updateUserSubscriptionController)
 );
-
 router.post(
   "/upload",
   uploadMiddleware.single("avatar"),
   asyncWrapper(uploadController)
 );
-
 router.patch(
   "/avatars",
   authMiddleware,

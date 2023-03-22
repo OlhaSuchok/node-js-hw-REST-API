@@ -4,30 +4,42 @@ class ContactsApi extends Error {
     this.status = 400;
   }
 }
+
 class NotFound extends ContactsApi {
   constructor(message) {
     super(message);
     this.status = 404;
   }
 }
+
 class ValidationError extends ContactsApi {
   constructor(message) {
     super(message);
     this.status = 400;
   }
 }
+
 class WrongParametersError extends ContactsApi {
   constructor(message) {
     super(message);
     this.status = 400;
   }
 }
+
+class BadRequest extends ContactsApi {
+  constructor(message) {
+    super(message);
+    this.status = 400;
+  }
+}
+
 class NotAuthorizedError extends ContactsApi {
   constructor(message) {
     super(message);
     this.status = 401;
   }
 }
+
 class RegistrationConflictError extends ContactsApi {
   constructor(message) {
     super(message);
@@ -39,6 +51,7 @@ module.exports = {
   ContactsApi,
   ValidationError,
   WrongParametersError,
+  BadRequest,
   NotAuthorizedError,
   RegistrationConflictError,
   NotFound,

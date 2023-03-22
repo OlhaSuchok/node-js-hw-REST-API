@@ -1,4 +1,4 @@
-const Contact = require("../service/schemas/contacts");
+const Contact = require("../db/schemas/contacts");
 
 const { RegistrationConflictError } = require("../helpers/errors");
 
