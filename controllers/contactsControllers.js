@@ -5,7 +5,7 @@ const {
   addOneContact,
   updateOneContactById,
   updateStatusContact,
-} = require("../models/contacts");
+} = require("../service/contacts");
 
 const { NotFound } = require("../helpers/errors");
 

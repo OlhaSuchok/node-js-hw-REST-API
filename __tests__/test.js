@@ -43,8 +43,8 @@ describe("test auth routes", () => {
 
 // =================================================================================
 // GetOneContactById middleware test
-// const { getOneContactById } = require("../models/contacts");
-// const Contact = require("../service/schemas/contacts");
+// const { getOneContactById } = require("../service/contacts");
+// const Contact = require("../db/schemas/contacts");
 
 // describe("Contacts servise getOneContactById test", () => {
 //   it("Should return post data by providen ID", async () => {

@@ -11,7 +11,6 @@ const FILE_DIR = path.resolve("./tmp");
 const {
   registerValidation,
   loginValidation,
-  // registrationConfirmationValidation,
   resendConfirmationValidation,
 } = require("../../middlewares/validationMiddleware");
 

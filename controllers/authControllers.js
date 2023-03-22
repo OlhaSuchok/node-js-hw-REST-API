@@ -12,7 +12,7 @@ const {
   updateUserSubscription,
   upload,
   updateAvatar,
-} = require("../models/users");
+} = require("../service/users");
 
 const registrationController = async (req, res) => {
   const { email, password } = req.body;

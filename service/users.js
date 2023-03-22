@@ -1,6 +1,6 @@
 const jsonwebtoken = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const User = require("../service/schemas/users");
+const User = require("../db/schemas/users");
 const gravatar = require("gravatar");
 const fs = require("fs/promises");
 const path = require("path");
@@ -114,14 +114,20 @@ const resendConfirmation = async (email) => {
 };
 
 const login = async (email, password) => {
-  const user = await User.findOne({ email, verify: true });
+  const user = await User.findOne({ email });
 
   if (!user) {
-    throw new NotAuthorizedError("Email or password is wrong");
+    throw new NotAuthorizedError("Email or password is wrong.");
+  }
+
+  if (user.verify === false) {
+    throw new NotAuthorizedError(
+      `The email address '${email}' is not verified.`
+    );
   }
 
   if (!(await bcrypt.compare(password, user.password))) {
-    throw new NotAuthorizedError("Email or password is wrong");
+    throw new NotAuthorizedError("Email or password is wrong.");
   }
 
   const token = jsonwebtoken.sign(
