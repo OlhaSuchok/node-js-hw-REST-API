@@ -45,10 +45,10 @@ const registration = async (email, password) => {
 
   const msg = {
     to: email,
-    from: "suchok_olya@ukr.net",
+    from: process.env.EMAIL,
     subject: "Verify your email!",
-    text: `Please, <a href="http:localhost:${process.env.PORT}/api/users/verify/${verifyToken}">confirm<a/> your email address.`,
-    html: `Please, <a href="http:localhost:${process.env.PORT}/api/users/verify/${verifyToken}">confirm<a/> your email address.`,
+    text: `Please, <a href="${process.env.BASE_URL}/api/users/verify/${verifyToken}">confirm<a/> your email address.`,
+    html: `Please, <a href="${process.env.BASE_URL}/api/users/verify/${verifyToken}">confirm<a/> your email address.`,
   };
   await sgMail.send(msg);
 
@@ -78,7 +78,7 @@ const registrationConfirmation = async (verificationToken) => {
 
   const msg = {
     to: user.email,
-    from: "suchok_olya@ukr.net",
+    from: process.env.EMAIL,
     subject: "Thank you for registration!",
     text: "<h1>and easy to do anywhere, even with Node.js</h1>",
     html: "<h1>and easy to do anywhere, even with Node.js</h1>",
@@ -102,18 +102,13 @@ const resendConfirmation = async (email) => {
 
   const msg = {
     to: user.email,
-    from: "suchok_olya@ukr.net",
+    from: process.env.EMAIL,
     subject: "Verify your email!",
-    text: `Please, <a href="http:localhost:${process.env.PORT}/api/users/verify/${user.verificationToken}">confirm<a/> your email address.`,
-    html: `Please, <a href="http:localhost:${process.env.PORT}/api/users/verify/${user.verificationToken}">confirm<a/> your email address.`,
+    text: `Please, <a href="${process.env.BASE_URL}/api/users/verify/${user.verificationToken}">confirm<a/> your email address.`,
+    html: `Please, <a href="${process.env.BASE_URL}/api/users/verify/${user.verificationToken}">confirm<a/> your email address.`,
   };
 
   await sgMail.send(msg);
-
-  await User.findByIdAndUpdate(user._id, {
-    verificationToken: null,
-    verify: true,
-  });
 
   return user;
 };
